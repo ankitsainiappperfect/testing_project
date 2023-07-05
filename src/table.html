@@ -1,0 +1,165 @@
+<style>
+html {
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+table {
+  border: 1px solid lightgray;
+}
+
+tbody {
+  border-bottom: 1px solid lightgray;
+}
+
+th {
+  border-bottom: 1px solid lightgray;
+  border-right: 1px solid lightgray;
+  padding: 2px 4px;
+}
+
+tfoot {
+  color: gray;
+}
+
+tfoot th {
+  font-weight: normal;
+}
+
+</style>
+
+<!-- You can add any HTML/CSS/JS here. UMD versions are required.
+Keep in mind that Custom Components are sensitive to bundle sizes, so try using a
+custom implementation when possible. -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="
+https://cdn.jsdelivr.net/npm/@tanstack/react-table@8.7.0/build/umd/index.production.js
+"></script>
+
+<div id="react"></div>
+
+<script type="text/babel">
+  console.log(ReactTable)
+  const columnHelper = ReactTable.createColumnHelper();
+  
+  const columns = [
+    columnHelper.accessor('firstName', {
+      cell: info => info.getValue(),
+      footer: info => info.column.id,
+    }),
+    columnHelper.accessor(row => row.lastName, {
+      id: 'lastName',
+      cell: info => <i>{info.getValue()}</i>,
+      header: () => <span>Last Name</span>,
+      footer: info => info.column.id,
+    }),
+    columnHelper.accessor('age', {
+      header: () => 'Age',
+      cell: info => info.renderValue(),
+      footer: info => info.column.id,
+    }),
+    columnHelper.accessor('visits', {
+      header: () => <span>Visits</span>,
+      footer: info => info.column.id,
+    }),
+    columnHelper.accessor('status', {
+      header: 'Status',
+      footer: info => info.column.id,
+    }),
+    columnHelper.accessor('progress', {
+      header: 'Profile Progress',
+      footer: info => info.column.id,
+    }),
+  ]
+
+  const MyCustomComponent = () => {
+    const defaultData = [
+      {
+        firstName: 'tanner',
+        lastName: 'linsley',
+        age: 24,
+        visits: 100,
+        status: 'In Relationship',
+        progress: 50,
+      },
+      {
+        firstName: 'tandy',
+        lastName: 'miller',
+        age: 40,
+        visits: 40,
+        status: 'Single',
+        progress: 80,
+      },
+      {
+        firstName: 'joe',
+        lastName: 'dirte',
+        age: 45,
+        visits: 20,
+        status: 'Complicated',
+        progress: 10,
+      },
+    ]
+    
+    
+    const getCoreRowModel = ReactTable.getCoreRowModel;
+    const [data, setData] = React.useState(() => [...defaultData])
+    const table = ReactTable.useReactTable({ data, columns,getCoreRowModel:getCoreRowModel()});
+    console.log('table', table.getRowModel()) 
+    return (
+      <div className="p-2">
+        <table>
+          <thead>
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <th key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : ReactTable.flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+          {table.getRowModel().rows.map(row => ( 
+            <tr key={row.id}>
+              {row.getVisibleCells().map(cell => (
+                <td key={cell.id}>
+                  {ReactTable.flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+          <tfoot>
+            {table.getFooterGroups().map(footerGroup => (
+              <tr key={footerGroup.id}>
+                {footerGroup.headers.map(header => (
+                  <th key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : ReactTable.flexRender(
+                        header.column.columnDef.footer,
+                        header.getContext()
+                      )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </tfoot>
+        </table>
+      </div>
+    )
+  }
+
+  // This is the entrypoint for the React component.
+  const ConnectedComponent = Retool.connectReactComponent(MyCustomComponent)
+  const container = document.getElementById('react')
+  const root = ReactDOM.createRoot(container)
+  root.render(<ConnectedComponent />)
+</script>
