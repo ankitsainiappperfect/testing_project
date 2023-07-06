@@ -110,11 +110,34 @@ const  TableComponent=()=> {
   const DeleteAction = ({ row, table }) => {
     //console.log(row.original.email);
     console.log(row);
+    let st=row.original.id;
+    let st1=parseInt(row.original.Manager);
     const meta = table.options.meta;
     const setdeleteRow = (e) => {
       const rows = [...data];
       rows.splice(row.index, 1);
       setData(rows);
+      setData((old) =>
+          
+      old.map((row, index) => {
+        let v=parseInt(row.Manager);
+        if (v=== st&&v!==st1) {
+          return {
+            ...old[index],
+            ['Manager']:st1,// updated the corresponding column
+          };
+        }
+        else if(v==st&&v==st1){
+          return {
+            ...old[index],
+            ['Manager']:'-',// updated the corresponding column
+          };
+        }
+        return row;
+      })
+       
+    );
+    
       
     };
     
