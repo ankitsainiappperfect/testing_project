@@ -165,7 +165,7 @@ const  TableComponent=()=> {
       const rows = [...data];
       rows.splice(row.index, 1);
       setData(rows);
-
+      setoriginalData(rows);
       let st=row.original.Employee;
       let st1=row.original.Manager;
     
