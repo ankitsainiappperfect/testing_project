@@ -12,15 +12,47 @@ import {
 import { useMemo } from "react";
 
 
-
+const manager=[
+  {
+  id:"10",
+  name:"Bern Blanchflower"}
+  ,{
+    id:"12",
+    name:"Vachel Aery"
+  },{
+    id:"14",
+    name:"Eugene Windrum"
+  }]
+  
 const  TableComponent=()=> {
- 
+  
   const [selectRow,setselectRow]=useState([])// to tell which row is selected to edit
   const [deleteRow,setdeleteRow]=useState([])// to tell which row is selected to delete
   const [sort,setsort]=useState([])
   const [filter,setfilter]=useState('')
   
+  
   const empdata=JSON.parse(localStorage.getItem('listofemployee'))
+  empdata.map((row,index)=>
+  {
+     //let idx=0;
+     //console.log(row);
+     let tempname="";
+     Array.from(manager).forEach((ele)=>
+     {
+     // console.log(typeof(ele.id));
+    // console.log(row.Manager);
+      if((parseInt(ele.id)===parseInt(row.Manager)))
+      {
+        //console.log(1);
+        tempname=ele.name;
+      }
+     })
+     console.log(row,tempname);
+     if(tempname!="")
+     row.Manager=tempname;
+     return row;
+  })
 
   const [originalData, setoriginalData] = useState(() => [...empdata]);
 
@@ -37,7 +69,7 @@ const  TableComponent=()=> {
   },[data])
  
   const columnHelper = createColumnHelper(); 
-
+   let track=0;
   // to Edit Each cell of the row
   const EditableCell = ({ getValue, row, column, table }) => {
     const initialValue = getValue();
@@ -80,8 +112,19 @@ const  TableComponent=()=> {
    
     return <span>{value}</span>;
   };
-  
+
+
+//   function disableBtn() {
+//     document.getElementById("myBtn").disabled = true;
+// }
+
+
+// function enableBtn() {
+//   document.getElementById("myBtn").disabled = false;
+// }
+
   const EditAction = ({ row, table }) => {
+   // document.addEventListener("DOMContentLoaded", disableBtn())
     const meta = table.options.meta;
     //marking the row selected for editing
     const setselectRow = (e) => {
@@ -91,13 +134,17 @@ const  TableComponent=()=> {
       }));
       // will retrieve previous data if we do not want changes to be done
       meta.revertData(row.index, e.target.name === "cancel");
+      // if(e.target.name==="cancel"||e.target.name==="done")
+      // {
+      //   enableBtn();
+      // }
     };
     // if this row id is selected for edit it will display 
     // both cancel and tick sign.
     return meta.selectRow[row.id] ? (
       <>
         <button onClick={setselectRow} name="cancel">X</button> 
-        <button onClick={setselectRow}>✔</button>
+        <button onClick={setselectRow} name="done">✔</button>
       </>
     ) : (
       <>
@@ -109,41 +156,48 @@ const  TableComponent=()=> {
   
   const DeleteAction = ({ row, table }) => {
     //console.log(row.original.email);
-    console.log(row);
-    let st=row.original.id;
-    let st1=parseInt(row.original.Manager);
-    const meta = table.options.meta;
+   //console.log(row);
+   //console.log(typeof(row.original.Manager));
+    
+   const meta = table.options.meta;
     const setdeleteRow = (e) => {
+     
       const rows = [...data];
       rows.splice(row.index, 1);
       setData(rows);
+
+      let st=row.original.Employee;
+      let st1=row.original.Manager;
+    
+      if(st1!="-"&&st==st1)
+      {
+        st1="-";
+      }
       setData((old) =>
           
       old.map((row, index) => {
-        let v=parseInt(row.Manager);
-        if (v=== st&&v!==st1) {
+        
+        let v=row.Manager;
+        if(v!="-")
+          {if(v==st){
           return {
             ...old[index],
             ['Manager']:st1,// updated the corresponding column
           };
         }
-        else if(v==st&&v==st1){
-          return {
-            ...old[index],
-            ['Manager']:'-',// updated the corresponding column
-          };
-        }
+      }
         return row;
       })
        
     );
-    
-      
     };
     
     return (
       <>
-      <button onClick={setdeleteRow}>X</button>
+      
+       
+    <button onClick={setdeleteRow} id="myBtn">X</button>
+   
       </>
     );
   };
