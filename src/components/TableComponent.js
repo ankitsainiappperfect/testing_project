@@ -230,7 +230,7 @@ let Track=0;
       header:'ID',
       accessorKey: 'id',
       footer:'ID',
-      cell: EditableCell,
+     // cell: EditableCell,
       meta: {
         type: "number",
       },
