@@ -30,7 +30,7 @@ const  TableComponent=()=> {
   const [deleteRow,setdeleteRow]=useState([])// to tell which row is selected to delete
   const [sort,setsort]=useState([])
   const [filter,setfilter]=useState('')
-  
+  const [track,settrack]=useState(0)
   
   const empdata=JSON.parse(localStorage.getItem('listofemployee'))
   empdata.map((row,index)=>
@@ -48,7 +48,7 @@ const  TableComponent=()=> {
         tempname=ele.name;
       }
      })
-     console.log(row,tempname);
+    // console.log(row,tempname);
      if(tempname!="")
      row.Manager=tempname;
      return row;
@@ -69,7 +69,7 @@ const  TableComponent=()=> {
   },[data])
  
   const columnHelper = createColumnHelper(); 
-   let track=0;
+   //let track=0;
   // to Edit Each cell of the row
   const EditableCell = ({ getValue, row, column, table }) => {
     const initialValue = getValue();
@@ -83,7 +83,11 @@ const  TableComponent=()=> {
     const onBlur = () => {
       // calling update data function through meta
       // this will update when we will come out of focus
+      console.log("the value is")
+      if(value!="")
       tableMeta.updateData(row.index, column.id, value);
+      else
+      alert('Feild is Empty')
     };
     const onSelectChange = (e) => {
       setValue(e.target.value);
@@ -114,42 +118,59 @@ const  TableComponent=()=> {
   };
 
 
-//   function disableBtn() {
-//     document.getElementById("myBtn").disabled = true;
-// }
+  function disableBtn() 
+  {
+   //console.log("phuch gaya")
+    document.getElementById('myBtn')
+   }
 
 
-// function enableBtn() {
-//   document.getElementById("myBtn").disabled = false;
-// }
-
+function enableBtn() 
+{
+  
+  document.getElementById("myBtn").disabled = false;
+}
+let Track=0;
   const EditAction = ({ row, table }) => {
    // document.addEventListener("DOMContentLoaded", disableBtn())
     const meta = table.options.meta;
     //marking the row selected for editing
     const setselectRow = (e) => {
+     
       meta.setselectRow((old) => ({
         ...old,
         [row.id]: !old[row.id],
       }));
+      
       // will retrieve previous data if we do not want changes to be done
       meta.revertData(row.index, e.target.name === "cancel");
-      // if(e.target.name==="cancel"||e.target.name==="done")
-      // {
-      //   enableBtn();
-      // }
+      if(e.target.name==="cancel"||e.target.name==="done")
+      {
+        settrack(0)
+      }
+      if(e.target.name=="edit")
+      {
+        settrack(1);
+      }
     };
     // if this row id is selected for edit it will display 
     // both cancel and tick sign.
     return meta.selectRow[row.id] ? (
       <>
+       {/* { console.log("disable")}
+      {
+      
+        disableBtn()
+      } */}
         <button onClick={setselectRow} name="cancel">X</button> 
-        <button onClick={setselectRow} name="done">✔</button>
+        <button onClick={setselectRow} name="done" id="nwbtn">✔</button>
       </>
     ) : (
       <>
-    
-      <button onClick={setselectRow}>✐</button>
+      
+      
+      <button onClick={setselectRow} name="edit">✐</button>
+      
       </>
     );
   };
@@ -194,9 +215,10 @@ const  TableComponent=()=> {
     
     return (
       <>
-      
-       
-    <button onClick={setdeleteRow} id="myBtn">X</button>
+      {
+       (track==1)?(<button onClick={setdeleteRow} id="myBtn" disabled>X</button>):
+    (<button onClick={setdeleteRow} id="myBtn">X</button>)
+      }
    
       </>
     );
